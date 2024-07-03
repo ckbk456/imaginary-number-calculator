@@ -1,2 +1,1 @@
-print("hi")
-print("is it working yet?")
+print("version 2")

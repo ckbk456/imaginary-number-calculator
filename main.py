@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import messagebox
 import regex as re
 
 # ============= Classes ============= #
@@ -31,7 +32,9 @@ def get_entry():
                 error_label.config(text="")
             else:
                 entries[key].focus()
-                data_type_error()
+                error = messagebox.showerror(title="Formatting Error", message="Please check number formatting. Allowed formatting:\n"
+                                                  "- 'a' where a is a Real number\n"
+                                                  "- 'a +- bi' where a and b are Real numbers")
 
 a = "+45"
 print(int(a))

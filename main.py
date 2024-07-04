@@ -9,35 +9,59 @@ class Number:
         self.imaginary = imaginary
 
 # ============= Function ============= #
-# def calculate():
-    # num1 = int(entry_1.get())
-    # num2 = int(entry_2.get())
-    # sum = num1 + num2
-    # result.delete(0, END)
-    # result.insert(END, sum)
-def data_type_error():
-    error_label.config(text="Please check number formatting")
+def calculate(num1,num2):
+    x = num1
+    y = num2
+    # (a + bi)(c + di)
+    a = int(x.real)
+    b = int(x.imaginary)
+    c = int(y.real)
+    d = int(y.imaginary)
+
+    try:
+        if operator == "add":
+            answer = Number(real = a+c, imaginary = b+d)
+        elif operator == "subtract":
+            answer = Number(real= a-c, imaginary= b-d)
+        elif operator == "multiply":
+            answer = Number(real= a*c - b*d, imaginary= a*d + b*c)
+    except NameError:
+        messagebox.showerror(title="No operator", message="Please select an operator")
+    except UnboundLocalError:
+        messagebox.showerror(title="404 notfound", message="Work in progress")
+
+    result.delete(0, END)
+    if answer.imaginary == 0:
+        result.insert(END, answer.real)
+    elif answer.imaginary > 0:
+        result.insert(END, f"{answer.real}+{answer.imaginary}i")
+    else:
+        result.insert(END, f"{answer.real}{answer.imaginary}i")
+
+
 def get_entry():
+    entry_list = []
     for key in entries:
         raw_entry = entries[key].get()
         no_space_entry = "".join(raw_entry.split())
         if no_space_entry.isdigit():
-            print(f"{no_space_entry} is real")
-            error_label.config(text="")
+            entry = Number(real=int(no_space_entry), imaginary=0)
+            entry_list.append(entry)
         else:
             match = re.match(r"(?P<real>[0-9]{1,})(?P<imaginary>[+-]{1}[0-9]{1,})[i]$", no_space_entry)
             if match:
                 entry = Number(real=match.group("real"),imaginary=match.group("imaginary"))
-                print(f"{int(entry.real)}, {int(entry.imaginary)}")
-                error_label.config(text="")
+                entry_list.append(entry)
             else:
                 entries[key].focus()
-                error = messagebox.showerror(title="Formatting Error", message="Please check number formatting. Allowed formatting:\n"
+                messagebox.showerror(title="Formatting Error", message="Please check number formatting. Allowed formatting:\n"
                                                   "- 'a' where a is a Real number\n"
                                                   "- 'a +- bi' where a and b are Real numbers")
+                break
+    calculate(entry_list[0],entry_list[1])
 
-a = "+45"
-print(int(a))
+# a = "+45"
+# print(int(a))
 # match = re.match(r"(?P<real>[0-9]{1,})(?P<imaginary>[+-]{1}[0-9]{1,})[i]$", a)
 # if match:
 #     print(match.group("imaginary"))
@@ -61,9 +85,16 @@ entry_1_label.grid(column=0, row=1)
 entry_1 = Entry(width=10)
 # entry_1.grid(column=1, row=1)
 
-operator_list = ['add','minus','multiply','divide']
-operator = StringVar(app)
-operator_button = OptionMenu(app, operator, *operator_list)
+operator_list = ['add','subtract','multiply','divide']
+
+# Select operator and save it to operator var
+def update_operator(selection):
+    global operator
+    operator = selection
+    print(operator)
+
+selection = StringVar()
+operator_button = OptionMenu(app, selection, *operator_list, command=update_operator)
 operator_button.grid(column=2, row=1)
 
 entry_2_label = Label(text="Num 2:", font=("courier", 14))
@@ -91,5 +122,4 @@ error_label.grid(column=2, row=4)
 app.mainloop()
 
 # ============= Testing ============= #
-# a+bi
 

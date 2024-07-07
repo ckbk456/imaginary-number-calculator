@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import regex as re
+import math
 
 # ============= Classes ============= #
 class Complex:
@@ -20,13 +21,13 @@ def calculate(num1,num2):
 
     try:
         if operator == "add":
-            answer = Complex(real =a + c, imaginary =b + d)
+            answer = Complex(real= a + c, imaginary= b + d)
         elif operator == "subtract":
-            answer = Complex(real=a - c, imaginary=b - d)
+            answer = Complex(real= a - c, imaginary= b - d)
         elif operator == "multiply":
-            answer = Complex(real=a * c - b * d, imaginary=a * d + b * c)
+            answer = Complex(real= a * c - b * d, imaginary= a * d + b * c)
         else:
-            pass
+            answer = Complex(real= round((a*c + b*d)/(c*c + d*d),4), imaginary= round((b*c - a*d)/(c*c + d*d),4))
     except NameError:
         messagebox.showerror(title="No operator", message="Please select an operator")
 

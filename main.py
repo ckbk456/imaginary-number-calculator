@@ -43,22 +43,51 @@ def get_entry():
     for key in entries:
         raw_entry = entries[key].get()
         no_space_entry = "".join(raw_entry.split())
+        print(no_space_entry)
         if no_space_entry.isdigit():
             entry = Number(real=int(no_space_entry), imaginary=0)
             entry_list.append(entry)
-        else:
-            match = re.match(r"(?P<real>[0-9]{1,})(?P<imaginary>[+-]{1}[0-9]{1,})[i]$", no_space_entry)
+            print(f"{entry.real} {entry.imaginary}, method 1")
+        elif "-i" in no_space_entry:
+            match = re.match(r"(?P<real>[0-9]{1,})[-]{1}[i]$", no_space_entry)
             if match:
-                entry = Number(real=match.group("real"),imaginary=match.group("imaginary"))
+                entry = Number(real=match.group("real"), imaginary=-1)
                 entry_list.append(entry)
+                print(f"{entry.real} {entry.imaginary}, method 2.1")
+            elif re.match("^[-]{1}[i]$", no_space_entry):
+                entry = Number(real=0, imaginary=-1)
+                entry_list.append(entry)
+                print(f"{entry.real} {entry.imaginary}, method 2.2")
             else:
                 entries[key].focus()
-                messagebox.showerror(title="Formatting Error", message="Please check number formatting. Allowed formatting:\n"
-                                                  "- 'a' where a is a Real number\n"
-                                                  "- 'a +- bi' where a and b are Real numbers")
+                formatting_error()
+                break
+        else:
+            match_complete = re.match(r"(?P<real>[0-9]{0,})(?P<imaginary>[+-]{1}[0-9]{1,})[i]$", no_space_entry)
+            match_ai = re.match(r"(?P<real>[0-9]{1,})[+]{1}[i]$", no_space_entry)
+            match_i = re.match("^[+]{0,1}[i]{1}$", no_space_entry)
+            if match_complete:
+                entry = Number(real=match_complete.group("real"),imaginary=match_complete.group("imaginary"))
+                entry_list.append(entry)
+                print(f"{entry.real}, {entry.imaginary}, method 3.1")
+            elif match_ai:
+                entry = Number(real=match_ai.group("real"), imaginary=1)
+                entry_list.append(entry)
+                print(f"{entry.real}, {entry.imaginary}, method 3.2")
+            elif match_i:
+                entry = Number(real=0, imaginary=1)
+                entry_list.append(entry)
+                print(f"{entry.real}, {entry.imaginary}, method 3.2")
+            else:
+                entries[key].focus()
+                formatting_error()
                 break
     calculate(entry_list[0], entry_list[1])
 
+def formatting_error():
+    messagebox.showerror(title="Formatting Error", message="Please check number formatting. Allowed formatting:\n"
+                                                           "- 'a' where a is a Real number\n"
+                                                           "- 'a +- bi' where a and b are Real numbers")
 # imaginary regex format (simple): "[0-9]{1,}[+-]{1}[0-9]{1,}[i]$"
 # imaginary regex format (better): r"(?P<real>[0-9]{1,}) (?P<imaginary>[+-]{1}[0-9]{1,})[i]$"
 
